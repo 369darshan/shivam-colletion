@@ -39,7 +39,7 @@ export type Props = {
 }
 
 export const CollectionArchive: React.FC<Props> = props => {
-  const { categoryFilters, sort } = useFilter()
+  const { categoryFilters, sortCategory } = useFilter()
   const {
     categories: catsFromProps,
     className,
@@ -77,8 +77,8 @@ export const CollectionArchive: React.FC<Props> = props => {
   const isRequesting = useRef(false)
   const [page, setPage] = useState(1)
 
-  const categories = (categoryFilters || [categoryFilters])
-    .map((cat: any) => (typeof categoryFilters === 'string' ? cat : cat))
+  const categories = (catsFromProps || [])
+    .map(cat => (typeof cat === 'object' ? cat?.id : cat))
     .join(',')
 
   const scrollToRef = useCallback(() => {
