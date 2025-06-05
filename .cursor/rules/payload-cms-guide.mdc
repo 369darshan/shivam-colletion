@@ -1,0 +1,125 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Payload CMS Backend Guide
+
+## Core Configuration
+
+- [src/payload/payload.config.ts](mdc:src/payload/payload.config.ts) - Main Payload configuration
+- [src/payload/payload-types.ts](mdc:src/payload/payload-types.ts) - Auto-generated TypeScript types
+- [src/payload/generated-schema.graphql](mdc:src/payload/generated-schema.graphql) - Auto-generated GraphQL schema
+
+## Collections Architecture
+
+### User Management
+- **Users Collection**: Authentication with role-based access (`admin`, `customer`)
+- **Access Control**: Defined in [src/payload/access/](mdc:src/payload/access)
+- **User Roles**: Admin (full access) vs Customer (limited access)
+
+### E-commerce Collections
+- **Products**: Main product catalog with Stripe integration
+- **Orders**: Created after successful checkout
+- **Categories**: Taxonomy for organizing products (supports nesting)
+- **Pages**: Layout builder enabled pages
+- **Media**: File uploads and asset management
+
+### Global Settings
+- **Header**: Navigation configuration
+- **Footer**: Footer content and links
+- Located in [src/payload/globals/](mdc:src/payload/globals)
+
+## Key Features
+
+### Layout Builder System
+- **Blocks**: Reusable content blocks in [src/payload/blocks/](mdc:src/payload/blocks)
+- **Implementation**: React components in [src/app/_blocks/](mdc:src/app/_blocks)
+- **Usage**: Available on Pages and Products collections
+
+### Access Control
+- Role-based permissions in [src/payload/access/](mdc:src/payload/access)
+- **Admin**: Full CRUD operations
+- **Customer**: Limited to own data
+- **Public**: Read-only for products and pages
+
+### Stripe Integration
+- **Configuration**: [src/payload/stripe/](mdc:src/payload/stripe)
+- **Webhooks**: Automatic sync between Stripe and Payload
+- **Products**: Connected via Stripe product selection
+- **Payments**: Processed through custom endpoints
+
+## Hooks System
+
+Located in [src/payload/hooks/](mdc:src/payload/hooks):
+- **beforeChange**: Validate data before saving
+- **afterChange**: Trigger actions after save (e.g., Stripe sync)
+- **beforeDelete**: Cleanup before deletion
+- **afterLogin**: Post-authentication logic
+
+## Custom Endpoints
+
+Located in [src/payload/endpoints/](mdc:src/payload/endpoints):
+- **create-payment-intent**: Stripe checkout initiation
+- **Custom API routes**: Extend Payload's default API
+
+## Database Integration
+
+- **MongoDB**: Primary database via `@payloadcms/db-mongodb`
+- **Collections**: Auto-generated from Payload config
+- **Relationships**: Built-in support for references between collections
+- **Indexes**: Configured per collection for performance
+
+## Admin Panel Customization
+
+- **Components**: Custom admin components in [src/payload/components/](mdc:src/payload/components)
+- **Fields**: Custom field types and UI
+- **Views**: Custom admin views and dashboards
+
+## API Endpoints
+
+### Automatic REST API
+```
+GET    /api/products          # List products
+GET    /api/products/:id      # Get single product
+POST   /api/products          # Create product (admin only)
+PATCH  /api/products/:id      # Update product (admin only)
+DELETE /api/products/:id      # Delete product (admin only)
+```
+
+### Authentication
+```
+POST   /api/users/login       # User login
+POST   /api/users/logout      # User logout
+POST   /api/users/refresh     # Refresh token
+GET    /api/users/me          # Get current user
+```
+
+### GraphQL (Optional)
+- Endpoint: `/api/graphql`
+- Schema: Auto-generated from collections
+- Queries and mutations available
+
+## Development Workflow
+
+1. **Schema Changes**: Modify collections in [src/payload/collections/](mdc:src/payload/collections)
+2. **Generate Types**: Run `yarn generate:types`
+3. **Admin Panel**: Access at `http://localhost:3000/admin`
+4. **API Testing**: Use REST or GraphQL endpoints
+5. **Database**: View/edit data through admin panel
+
+## Security Features
+
+- **Authentication**: JWT-based with refresh tokens
+- **Authorization**: Role and field-level permissions
+- **CORS**: Configured for frontend integration
+- **Validation**: Schema-based data validation
+- **Sanitization**: Built-in XSS protection
+
+## Seeding & Migration
+
+- **Seed Data**: [src/payload/seed/](mdc:src/payload/seed) directory
+- **Command**: `yarn seed` - drops database and creates sample data
+- **Environment**: Controlled via `PAYLOAD_SEED` environment variable
+
+

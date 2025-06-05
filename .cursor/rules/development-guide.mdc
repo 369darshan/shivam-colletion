@@ -1,0 +1,80 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Guide
+
+## Quick Start Commands
+
+```bash
+# Development server
+yarn dev                    # Starts both Payload CMS and Next.js
+
+# Stripe webhook testing
+yarn stripe:webhooks       # Listen for Stripe webhooks locally
+
+# Database operations
+yarn seed                  # Seed database with sample data
+yarn generate:types       # Generate TypeScript types from Payload
+yarn generate:graphQLSchema # Generate GraphQL schema
+
+# Build process
+yarn build:payload        # Build Payload admin panel
+yarn build:server         # Build Express server
+yarn build:next          # Build Next.js frontend
+yarn build               # Full production build
+
+# Production
+yarn serve               # Serve production build
+```
+
+## Key Configuration Files
+
+- [package.json](mdc:package.json) - Dependencies and scripts
+- [payload.config.ts](mdc:src/payload/payload.config.ts) - Main Payload CMS configuration
+- [next.config.js](mdc:next.config.js) - Next.js configuration
+- [server.ts](mdc:src/server.ts) - Express server setup
+- [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration
+
+## Environment Setup
+
+Required environment variables (create `.env` from `.env.example`):
+- `MONGODB_URI` - MongoDB connection string
+- `PAYLOAD_SECRET` - Payload security key
+- `STRIPE_SECRET_KEY` - Stripe secret key
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe public key
+- `STRIPE_WEBHOOKS_SIGNING_SECRET` - Stripe webhook secret
+
+## Development Workflow
+
+1. **Start Development**: `yarn dev` runs both Payload CMS admin (port 3000/admin) and Next.js frontend
+2. **Admin Panel**: Access at `http://localhost:3000/admin`
+3. **Frontend**: Access at `http://localhost:3000`
+4. **API**: Payload provides REST and GraphQL APIs automatically
+5. **Types**: Run `yarn generate:types` after schema changes
+
+## Common Development Tasks
+
+### Adding New Collections
+1. Create collection file in `src/payload/collections/`
+2. Import and add to [payload.config.ts](mdc:src/payload/payload.config.ts)
+3. Run `yarn generate:types` to update TypeScript types
+
+### Creating Custom Blocks
+1. Add block definition in `src/payload/blocks/`
+2. Create React component in `src/app/_blocks/`
+3. Register in layout builder configuration
+
+### Modifying API Endpoints
+- Custom endpoints go in `src/payload/endpoints/`
+- Payload hooks in `src/payload/hooks/`
+- Express routes can be added to [server.ts](mdc:src/server.ts)
+
+## File Organization Patterns
+
+- **Collections**: Database models and admin configuration
+- **Blocks**: Reusable content blocks for pages
+- **Components**: React UI components (prefix with underscore for internal)
+- **Utilities**: Helper functions and shared logic
+- **Access**: Permission and authentication logic

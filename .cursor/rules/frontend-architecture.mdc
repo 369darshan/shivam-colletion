@@ -1,0 +1,96 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Frontend Architecture (Next.js)
+
+## App Router Structure
+
+This project uses Next.js 13+ App Router. Key directories:
+
+- [src/app/](mdc:src/app) - Main app directory
+- [src/app/(pages)/](mdc:src/app/(pages)/) - Route groups for pages
+- [src/app/layout.tsx](mdc:src/app/layout.tsx) - Root layout component
+- [src/app/page.tsx](mdc:src/app/page.tsx) - Homepage
+
+## Component Organization
+
+### Internal Components (Prefixed with `_`)
+- [src/app/_components/](mdc:src/app/_components) - Reusable UI components
+- [src/app/_blocks/](mdc:src/app/_blocks) - Layout builder block components
+- [src/app/_heros/](mdc:src/app/_heros) - Hero section variations
+- [src/app/_providers/](mdc:src/app/_providers) - React context providers
+- [src/app/_utilities/](mdc:src/app/_utilities) - Frontend utility functions
+
+### API Integration
+- [src/app/_api/](mdc:src/app/_api) - API client utilities
+- [src/app/_graphql/](mdc:src/app/_graphql) - GraphQL queries and fragments
+
+## Styling Architecture
+
+- [src/app/_css/](mdc:src/app/_css) - Global CSS styles
+- [cssVariables.js](mdc:src/app/cssVariables.js) - CSS custom properties
+- Component-level CSS modules or styled-components
+
+## Key Frontend Features
+
+### Layout Builder System
+- Dynamic page building using Payload blocks
+- Block components in `_blocks/` directory
+- Configured in Payload collections (Pages, Products)
+
+### E-commerce Components
+- Shopping cart functionality
+- Product display components
+- Checkout flow components
+- User authentication UI
+
+### Responsive Design
+- Mobile-first approach
+- Consistent breakpoints
+- Accessible components
+
+## State Management
+
+- **Cart State**: Managed through context providers
+- **User Auth**: Payload's built-in auth system
+- **Product Data**: Fetched from Payload API
+- **Form State**: React Hook Form (v7.45.4)
+
+## API Integration Patterns
+
+### REST API
+```typescript
+// Example API call to Payload
+const response = await fetch(`/api/products/${id}`)
+const product = await response.json()
+```
+
+### GraphQL (Optional)
+- GraphQL schema auto-generated from Payload collections
+- Queries in `_graphql/` directory
+
+## Routing Conventions
+
+- **Static Routes**: Direct page files
+- **Dynamic Routes**: `[slug]` folders
+- **Route Groups**: `(pages)` for organization
+- **API Routes**: Not used (Payload handles API)
+
+## Performance Optimizations
+
+- Next.js built-in optimizations (Image, Link components)
+- Static generation where possible
+- Payload's efficient querying
+- Lazy loading for components
+
+## Development Tips
+
+1. **Hot Reload**: Both frontend and Payload admin reload on changes
+2. **TypeScript**: Full type safety with generated Payload types
+3. **Error Boundaries**: Implement for robust error handling
+4. **SEO**: Payload SEO plugin provides meta tags
+5. **Testing**: Consider adding React Testing Library
+
+

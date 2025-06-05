@@ -1,0 +1,175 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# E-commerce Features Guide
+
+## Shopping Cart System
+
+### Cart Data Structure
+```typescript
+// User cart field structure
+cart: {
+  items: [
+    {
+      product: ObjectId,     // Reference to Product
+      quantity: number,
+      variant?: string,      // Product variant if applicable
+    }
+  ],
+  createdOn: Date,
+  updatedOn: Date,
+}
+```
+
+### Cart Management
+- **Persistent Cart**: Saved to user profile when logged in
+- **Local Storage**: Anonymous cart synced on login
+- **Cart Updates**: Real-time quantity and item management
+- **Price Calculation**: Server-side validation for security
+
+## Stripe Integration
+
+### Configuration Files
+- [src/payload/stripe/](mdc:src/payload/stripe) - Stripe configuration and utilities
+- **Environment Variables**:
+  - `STRIPE_SECRET_KEY` - Server-side operations
+  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Client-side operations
+  - `STRIPE_WEBHOOKS_SIGNING_SECRET` - Webhook validation
+
+### Product-Stripe Sync
+- **Product Selection**: Stripe products selected in Payload admin sidebar
+- **Automatic Sync**: Webhook handlers keep data synchronized
+- **Price Updates**: Real-time price sync between platforms
+
+### Webhook Handlers
+```
+product.created    → Create Payload product
+product.updated    → Update Payload product
+price.updated      → Update product pricing
+payment_intent.succeeded → Create order
+```
+
+## Checkout Process
+
+### Payment Flow
+1. **Cart Review**: User reviews items and quantities
+2. **Create Payment Intent**: `POST /api/create-payment-intent`
+3. **Stripe Elements**: Client-side payment form
+4. **Payment Confirmation**: Stripe processes payment
+5. **Order Creation**: Successful payment creates Order record
+6. **Cart Cleanup**: User cart is cleared after purchase
+
+### Custom Endpoint
+- **Route**: `/api/create-payment-intent`
+- **Function**: Calculate total, create Stripe Payment Intent
+- **Security**: Server-side price validation
+- **Response**: Client secret for Stripe Elements
+
+## Order Management
+
+### Order Data Structure
+```typescript
+{
+  user: ObjectId,           // Customer reference
+  items: [{
+    product: ObjectId,
+    quantity: number,
+    price: number,          // Price at time of purchase
+  }],
+  total: number,
+  stripePaymentIntentID: string,
+  status: 'pending' | 'paid' | 'shipped' | 'delivered',
+  createdAt: Date,
+  shippingAddress?: Address,
+}
+```
+
+### Order Processing
+- **Creation**: Automatic after successful Stripe payment
+- **Status Updates**: Manual or automated order status management
+- **Customer Access**: Users can view their order history
+- **Admin Management**: Full order management in Payload admin
+
+## Paywall System
+
+### Purchase Tracking
+```typescript
+// User purchases field
+purchases: [{
+  product: ObjectId,        // Reference to purchased product
+  purchasedOn: Date,
+  stripePaymentIntentID: string,
+}]
+```
+
+### Access Control
+- **Gated Content**: Products can have restricted content/downloads
+- **Access Validation**: Check user purchases before serving content
+- **Digital Assets**: Protected file downloads for purchased products
+- **Content Unlocking**: Progressive content reveal based on purchases
+
+### Implementation
+- **Backend**: Access control in Payload collections
+- **Frontend**: Conditional rendering based on purchase status
+- **API Protection**: Middleware validates purchases for protected endpoints
+
+## User Authentication & Roles
+
+### Role-Based Access
+- **Admin**: Full system access, order management, product creation
+- **Customer**: Purchase products, manage profile, view orders
+- **Guest**: Browse products, add to cart (local storage)
+
+### Authentication Flow
+```
+Registration → Email verification → Account activation
+Login → JWT token → Session management
+Password reset → Email link → Secure reset flow
+```
+
+## Product Catalog Features
+
+### Product Types
+- **Physical Products**: Shipping required, inventory tracking
+- **Digital Products**: Instant access, download links
+- **Subscriptions**: Recurring billing (if implemented)
+- **Courses/Content**: Paywall-enabled educational content
+
+### Product Variants
+- **Size/Color Options**: Configurable product variants
+- **Pricing Tiers**: Different prices for different variants
+- **Inventory**: Per-variant stock tracking
+
+### SEO & Marketing
+- **SEO Plugin**: Meta tags, structured data
+- **Categories**: Nested product organization
+- **Search**: Built-in product search functionality
+- **Related Products**: Configurable product relationships
+
+## Analytics & Reporting
+
+### Built-in Tracking
+- **Order Analytics**: Revenue, conversion tracking
+- **Product Performance**: Popular products, inventory levels
+- **Customer Insights**: Purchase history, customer lifetime value
+
+### Integration Points
+- **Google Analytics**: E-commerce tracking integration
+- **Custom Dashboards**: Admin panel analytics views
+- **Export Features**: Order data export for accounting
+
+## Security Considerations
+
+### Payment Security
+- **PCI Compliance**: Stripe handles sensitive card data
+- **Server Validation**: All pricing calculated server-side
+- **Webhook Verification**: Stripe webhook signature validation
+
+### Data Protection
+- **User Privacy**: GDPR-compliant data handling
+- **Access Control**: Strict permission management
+- **Audit Trails**: Track admin actions and changes
+
+
